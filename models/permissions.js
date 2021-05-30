@@ -3,26 +3,22 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class categories extends Model {
+  class permissions extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      models.permissions.belongsTo(models.permission_groups,{foreignKey: "group_id"});
     }
   };
-  categories.init({
+  permissions.init({
     name: DataTypes.TEXT,
-    description: DataTypes.TEXT,
-    thumbnail: DataTypes.TEXT,
-    category_type: DataTypes.TEXT,
-    parent_id: DataTypes.INTEGER,
-    slug: DataTypes.TEXT,
+    group_id: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'categories',
+    modelName: 'permissions',
   });
-
-  return categories;
+  return permissions;
 };

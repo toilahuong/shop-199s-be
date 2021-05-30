@@ -12,13 +12,18 @@ module.exports = {
         type: Sequelize.TEXT
       },
       email: {
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT,
+        allowNull: false,
+        unique: true
       },
       phone: {
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT,
+        allowNull: false,
+        unique: true
       },
       password: {
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT,
+        allowNull: false,
       },
       gender: {
         type: Sequelize.TEXT

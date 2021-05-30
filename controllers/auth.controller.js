@@ -47,7 +47,7 @@ exports.register = async (req,res) => {
         req.body.password = await bcrypt.hash(req.body.password,10);
         delete req.body.confirm_password;
         const newUser = await User.create(req.body);
-        return res.json(newUser).status(200);
+        return res.status(200).json(newUser);
     } catch (error) {
         return res.status(400).json(error);
     }
@@ -75,8 +75,7 @@ exports.login = async (req,res) => {
                         if(!res) {
                             return Promise.reject('Tài khoản mật khẩu không chính xác');
                         }
-                    })
-                    .catch(() => Promise.reject('Tài khoản mật khẩu không chính xác')) 
+                    }).catch((error) => Promise.reject('Tài khoản mật khẩu không chính xác'))
             })
             .run(req);
         validationResult(req).throw();
@@ -84,13 +83,60 @@ exports.login = async (req,res) => {
         req.session.token = token;
         return res.status(200).json({token: token});
     } catch (error) {
+        console.log(error);
         return res.status(403).json(error);
     }
 }
-exports.getInfo = async (req,res) => {
+exports.loginAdmin = async (req,res) => {
+    try {
+        let user = {};
+        await check('email')
+            .notEmpty().withMessage("Email không được để trống")
+            .run(req);
+        await check('password')
+            .notEmpty().withMessage('Mật khẩu không được để trống')
+            .bail()
+            .custom((value, {req}) => {
+                return User.findOne({where: {email: req.body.email}})
+                    .then(res => {
+                        user = res;
+                        return bcrypt.compare(value,res.password)
+                    })
+                    .then(res => {
+                        if(!res) {
+                            return Promise.reject('Tài khoản mật khẩu không chính xác');
+                        }
+                    }).catch((error) => Promise.reject('Tài khoản mật khẩu không chính xác'))
+            })
+            .run(req);
+        validationResult(req).throw();
+        const roles = await user.getRoles();
+        if(!roles.length) throw {errors: [{msg: "Bạn không có quyền truy cập vào trang này"}]}
+        const token = await jwt.sign({
+            _id: user.id,
+            full_name: user.full_name
+        }, process.env.TOKEN_SECRET, { algorithm: 'HS256', expiresIn: '12h' });
+        req.session.token = token;
+        return res.status(200).json({token: token});
+    } catch (error) {
+        console.log(error);
+        return res.status(403).json(error);
+    }
+}
+exports.logout = async (req,res) => {
+    try {
+        if (!req.session.token) throw {errors: [{msg: "Đã xảy ra lỗi"}]};
+        req.session.token = undefined;
+        return res.status(200).json({isLogout: true});
+    } catch (error) {
+        console.log(error);
+        return res.status(403).json(error);
+    }
+}
+exports.getUser = async (req,res) => {
     try {
         const response = await User.findOne({where: {id: req.user_id}});
-        if (!response) throw new Error("Unauthorized");
+        if (!response) throw {errors: [{msg: "Unauthorized"}]};
         const data = {
             _id: response.id,
             full_name: response.full_name,
@@ -101,15 +147,34 @@ exports.getInfo = async (req,res) => {
         return res.status(403).json(error);
     }
 }
-exports.getUser = async (req,res) => {
+exports.getAdmin = async (req,res) => {
+    try {
+        const response = await User.findOne({where: {id: req.user_id}});
+        if (!response) throw {errors: [{msg: "Unauthorized"}]};
+        const data = {
+            _id: response.id,
+            full_name: response.full_name,
+            email: response.email,
+            address: response.address,
+            phone: response.phone,
+            date_of_birth: response.date_of_birth
+        }
+        console.log(data);
+        return res.status(200).json(data);
+    } catch (error) {
+        return res.status(403).json(error);
+    }
+}
+exports.getInfo = async (req,res) => {
     try {
         let response = await User.findOne({where: {id: req.user_id}});
-        if (!response) throw new Error("Unauthorized");
+        if (!response) throw {errors: [{msg: "Unauthorized"}]};
         console.log(response);
         let data= {...response.dataValues}
         delete data.password;
         return res.status(200).json(data);
     } catch (error) {
+        console.log(error);
         return res.status(403).json(error);
     }
 }
@@ -124,11 +189,10 @@ exports.updatePasswordUser = async (req,res) => {
                             .then((res) => bcrypt.compare(value,res.password))
                             .then((res) => {
                                 if(!res) {
-                                    return new Promise.reject("Mật khẩu không chính xác");
+                                    return Promise.reject("Mật khẩu không chính xác");
                                 } 
-                            })
-                            .catch((err) => Promise.reject("Mật khẩu không chính xác"));
-            }).withMessage('Mật khẩu không chính xác')
+                            }).catch(() => Promise.reject('Mật khẩu không chính xác'))
+            })
             .run(req);
         await check("newPassword")
             .notEmpty().withMessage('Mật khẩu không được để trống')
@@ -190,9 +254,8 @@ exports.updateUser = async (req,res) => {
                         if(!res) {
                             return Promise.reject('Mật khẩu không chính xác');
                         }
-                    })
-                    .catch(() => Promise.reject('Mật khẩu không chính xác')) 
-            }).withMessage('Mật khẩu không chính xác')
+                    }).catch(() => Promise.reject('Mật khẩu không chính xác'))
+            })
             .run(req);
         validationResult(req).throw();
         const isUpdate = await User.update(

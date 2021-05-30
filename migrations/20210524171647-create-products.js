@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('categories', {
+    await queryInterface.createTable('products', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,19 +12,31 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
+      code: {
+        type: Sequelize.TEXT,
+        unique: true
+      },
       description: {
         type: Sequelize.TEXT
       },
-      thumbnail: {
-        type: Sequelize.TEXT
+      details: {
+        type: Sequelize.STRING
       },
-      category_type: {
-        type: Sequelize.TEXT,
-        defaultValue: 'post'
-      },
-      parent_id: {
+      quantily: {
         type: Sequelize.INTEGER,
         defaultValue: 0
+      },
+      regular_price: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0
+      },
+      sale_price: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0
+      },
+      status: {
+        type: Sequelize.TEXT,
+        defaultValue: 'pending'
       },
       slug: {
         type: Sequelize.TEXT
@@ -40,6 +52,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('categories');
+    await queryInterface.dropTable('products');
   }
 };

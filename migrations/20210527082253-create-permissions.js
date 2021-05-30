@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('categories', {
+    await queryInterface.createTable('permissions', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -9,25 +9,10 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-      },
-      description: {
         type: Sequelize.TEXT
       },
-      thumbnail: {
-        type: Sequelize.TEXT
-      },
-      category_type: {
-        type: Sequelize.TEXT,
-        defaultValue: 'post'
-      },
-      parent_id: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0
-      },
-      slug: {
-        type: Sequelize.TEXT
+      group_id: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -40,6 +25,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('categories');
+    await queryInterface.dropTable('permissions');
   }
 };
