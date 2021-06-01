@@ -1,96 +1,96 @@
-const { google } = require('googleapis');
+const cloudinary = require('cloudinary').v2;
 const formidable = require('formidable');
-const fs = require('fs');
-const CLIENT_ID  = '488748839605-1j3n0q1iqejta56n1j0ua5osgumt3q17.apps.googleusercontent.com';
-const CLIENT_SECRET  = 'Ob0t_xJmKRzWhbTxwa9j0pqf';
-const REDIRECT_URI  = 'https://developers.google.com/oauthplayground';
-const REFRESH_TOKEN  = '1//04uxpQlwUsSqmCgYIARAAGAQSNwF-L9Ir2iRXZoF9ZU6icjwLoW6IU1dPCTZgJkQAbj2COHZsqGbBAVVirx790tPcDRB0WrmiVhU';
-const FOLDER_ID = '1wu62GSsfmZfXwNpEOvh-R2GDFMh97z--';
-const oauth2Client = new google.auth.OAuth2(
-    CLIENT_ID,
-    CLIENT_SECRET,
-    REDIRECT_URI
-  );
-  
-oauth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
-  
-const drive = google.drive({
-    version: 'v3',
-    auth: oauth2Client,
+const fs = require('fs')
+const slug = require('slug')
+const db = require('../models/index');
+const Library = db.library;
+cloudinary.config({
+    cloud_name: 'toilahuong',
+    api_key: '866281779119939',
+    api_secret: 'r5_MJGMPmhlxxNQDWZMVtyGPG8k'
 });
-exports.uploadImages = async (req,res) => {
+exports.upload = async (req,res) => {
     try {
         const form = formidable({ multiples: true });
- 
+        
         var images = await new Promise(function (resolve, reject) {
             form.parse(req, function (err, fields, files) {
                 if (err) {
                     reject(err);
                     return;
                 }
+                let math = ["image/png", "image/jpeg","image/gif"];
+                if (math.indexOf(files.upload.type) === -1) reject('lỗi');
+                files.upload.originalName = files.upload.name.split('.')[0];
                 resolve(files);
             }); 
         });
-        const response = await uploadFile(images.upload);
-        const data = await generatePublicUrl(response.id);
-        return res.status(200).json({url: data.webContentLink});
+        const image = await uploadImage(images.upload);
+        const lib = await Library.create(image)
+        return res.status(200).json(lib);
     } catch (error) {
         console.log(error)
     }
     
 }
-
-
-  async function uploadFile(image) {
+exports.delete = async (req,res) => {
     try {
-        const response = await drive.files.create({
-            requestBody: {
-              name: image.name, //This can be name of your choice
-              mimeType: image.type,
-              parents: [FOLDER_ID]
-            },
-            media: {
-              mimeType: image.type,
-              body: fs.createReadStream(image.path),
-            },
-        });
-  
-      return response.data;
+        const id = parseInt(req.params.id);
+        const response = await Library.findOne({where: {id: id}});
+        const result = await deleteImage(response.cloudinary_id);
+        const isDestroy = await Library.destroy({where: {id: id}});
+        return res.status(200).json({isDestroy: isDestroy ? true : false});
     } catch (error) {
-      return error;
+        console.log(error);
+        return res.status(400).json(error);
     }
-  }
-
-  async function deleteFile(fileId) {
+}
+exports.getFile = async (req,res) => {
     try {
-      const response = await drive.files.delete({
-        fileId: fileId,
-      });
-      return {
-        data: response.data,
-        status: response.status
-      }
+        const lib = await Library.findAll({order: [['id', 'DESC']],limit: 20});
+        return res.status(200).json(lib);
     } catch (error) {
-      return (error);
+        console.log(error);
+        return res.status(400).json(error);
     }
-  }
+}
+const uploadImage = (file) => {
+    return new Promise((resolve,reject) => {
+        cloudinary.uploader.upload(file.path, {
+                public_id: `shop199s/${Date.now()}-${slug(file.originalName)}`
+            })
+            .then(result => {
+                if (result) {
+                    
+                    fs.unlinkSync(file.path)
+                    resolve({
+                        name: result.original_filename,
+                        url: result.secure_url,
+                        cloudinary_id: result.public_id,
+                        thumbnail: reSizeImage(result.public_id, 150, 150),
+                        medium: reSizeImage(result.public_id, 300, 300),
+                        large: reSizeImage(result.public_id, 1024, 1024),
+                    })
+                }
+            }).catch(err => reject(err));
+    })
+}
 
-  async function generatePublicUrl(fileId) {
-    try {
-      await drive.permissions.create({
-        fileId: fileId,
-        requestBody: {
-          role: 'reader',
-          type: 'anyone',
-        },
-      });
-  
-      const result = await drive.files.get({
-        fileId: fileId,
-        fields: 'webViewLink, webContentLink',
-      });
-      return result.data;
-    } catch (error) {
-      return error;
-    }
-  }
+const reSizeImage = (id, h, w, q = 80) => {
+    return cloudinary.url(id, {
+        height: h,
+        width: w,
+        quality: q,
+        crop: 'fill',
+        format: 'jpg'
+    })
+}
+const deleteImage = (id) => {
+    return new Promise(async (resolve,reject) => {
+        cloudinary.api.delete_resources(id, function(error, result){
+            if(error) reject(error);
+            resolve(result);
+        })
+    })
+    
+}

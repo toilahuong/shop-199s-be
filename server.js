@@ -5,6 +5,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const app = express();
+app.use(express.static('public'));
 app.use(cookieParser())
 app.use(session({
     secret: process.env.SESSION_SECRET,

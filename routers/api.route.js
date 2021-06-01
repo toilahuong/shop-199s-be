@@ -11,6 +11,8 @@ const LibraryController = require('../controllers/library.controller');
 const checkAuth = require('../middlewares/auth.middleware');
 const checkRole = require('../middlewares/role.middleware');
 const csrfProtection = require('../middlewares/csrf.middleware');
+
+
 router.get('/form', csrfProtection , (req,res) => res.json({ csrfToken: req.csrfToken() }));
 
 router.post('/user/register',csrfProtection, AuthController.register);
@@ -28,8 +30,11 @@ router.get('/post', PostController.getAll);
 router.get('/post/:id', PostController.getById);
 router.get('/post/:id/category', PostController.getPostByCategory);
 
+router.get('/library', LibraryController.getFile);
 
-router.use(checkAuth);
+
+// router.use(checkAuth);
+
 
 router.get('/user/get-info', AuthController.getInfo);
 router.get('/user/get-user', AuthController.getUser);
@@ -38,11 +43,13 @@ router.put('/user/edit', csrfProtection, AuthController.updateUser);
 router.put('/user/change-password', csrfProtection, AuthController.updatePasswordUser);
 
 
-router.use(checkRole.admin);
+// router.use(checkRole.admin);
+
 
 router.get('/user/get-admin', AuthController.getAdmin);
-router.post('/library', LibraryController.uploadImages);
 
+router.post('/library', LibraryController.upload);
+router.delete('/library/:id', LibraryController.delete);
 
 router.post('/permission', PermissionController.create);
 router.get('/permission/:id', PermissionController.getByGroup);
