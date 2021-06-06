@@ -1,4 +1,5 @@
 'use strict';
+
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     /**
@@ -10,12 +11,20 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-    await queryInterface.bulkInsert('roles', [
+     await queryInterface.bulkInsert('categories', [
       {
-        name: 'Administrator',
+        name: 'Chưa phân loại',
+        category_type: 'post',
+        parent_id: 0,
+        slug: 'chua-phan-loai-1',
+        default: true
       },
       {
-        name: 'Author',
+        name: 'Chưa phân loại',
+        category_type: 'product',
+        parent_id: 0,
+        slug: 'chua-phan-loai-2',
+        default: true
       }
     ], {});
   },
@@ -27,6 +36,5 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-     await queryInterface.bulkDelete('roles', null, {});
   }
 };

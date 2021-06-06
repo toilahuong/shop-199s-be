@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   permission_groups.init({
-    name: DataTypes.TEXT
+    name: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'permission_groups',

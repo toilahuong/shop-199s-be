@@ -9,17 +9,17 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       description: {
         type: Sequelize.TEXT
       },
       thumbnail: {
-        type: Sequelize.TEXT
+        type: Sequelize.INTEGER
       },
       category_type: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING,
         defaultValue: 'post'
       },
       parent_id: {
@@ -27,7 +27,11 @@ module.exports = {
         defaultValue: 0
       },
       slug: {
-        type: Sequelize.TEXT
+        type: Sequelize.STRING
+      },
+      default: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       createdAt: {
         allowNull: false,

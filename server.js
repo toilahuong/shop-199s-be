@@ -25,7 +25,7 @@ const PORT = process.env.PORT || 8888;
 
 
 app.use((req,res,next) => {
-    req.user_id = null;
+    req.user_id = 1;
     next();
 })
 const apiRouter = require('./routers/api.route');

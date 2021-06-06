@@ -9,30 +9,30 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       full_name: {
-        type: Sequelize.TEXT
+        type: Sequelize.STRING
       },
       email: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING,
         allowNull: false,
         unique: true
       },
       phone: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING,
         allowNull: false,
         unique: true
       },
       password: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       gender: {
-        type: Sequelize.TEXT
+        type: Sequelize.STRING
       },
       date_of_birth: {
         type: Sequelize.DATEONLY
       },
       address: {
-        type: Sequelize.TEXT
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

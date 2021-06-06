@@ -10,15 +10,17 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
+      models.categories.belongsTo(models.library,{foreignKey: "thumbnail"});
     }
   };
   categories.init({
-    name: DataTypes.TEXT,
+    name: DataTypes.STRING,
     description: DataTypes.TEXT,
-    thumbnail: DataTypes.TEXT,
-    category_type: DataTypes.TEXT,
+    thumbnail: DataTypes.INTEGER,
+    category_type: DataTypes.STRING,
     parent_id: DataTypes.INTEGER,
-    slug: DataTypes.TEXT,
+    default: DataTypes.BOOLEAN,
+    slug: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'categories',

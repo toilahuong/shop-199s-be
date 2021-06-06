@@ -1,4 +1,6 @@
 'use strict';
+const faker = require('faker');
+faker.locale = "vi";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     /**
@@ -10,14 +12,18 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-    await queryInterface.bulkInsert('roles', [
+   for(let i = 1; i <= 50; i++) {
+    await queryInterface.bulkInsert('posts', [
       {
-        name: 'Administrator',
-      },
-      {
-        name: 'Author',
+        title: faker.lorem.text(),
+        content: faker.lorem.paragraphs(),
+        post_type: 'page',
+        status: 'public',
+        slug: faker.lorem.slug(),
       }
     ], {});
+   }
+     
   },
 
   down: async (queryInterface, Sequelize) => {
@@ -27,6 +33,5 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-     await queryInterface.bulkDelete('roles', null, {});
   }
 };

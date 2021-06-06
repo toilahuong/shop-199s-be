@@ -9,18 +9,18 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       code: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING,
         unique: true
       },
       description: {
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT('long')
       },
       details: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT('long')
       },
       quantily: {
         type: Sequelize.INTEGER,
@@ -35,11 +35,11 @@ module.exports = {
         defaultValue: 0
       },
       status: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING,
         defaultValue: 'pending'
       },
       slug: {
-        type: Sequelize.TEXT
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

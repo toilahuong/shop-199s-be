@@ -34,6 +34,7 @@
     "slug": "^5.0.1"
   },
   "devDependencies": {
+    "faker": "^5.5.3",
     "nodemon": "^2.0.7"
   }
 }

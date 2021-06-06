@@ -20,17 +20,20 @@ router.post('/user/login',csrfProtection, AuthController.login);
 router.post('/user/login-admin',csrfProtection, AuthController.loginAdmin);
 
 router.get('/category', CategoryController.getCategoryByQuery);
+router.get('/category/all', CategoryController.getAll);
+router.get('/category/tree', CategoryController.getTreeCategory);
 router.get('/category/:id', CategoryController.getById);
 
 router.get('/product', ProductController.getAll);
 router.get('/product/:id', ProductController.getById);
 router.get('/product/:id/category', ProductController.getProductByCategory);
 
-router.get('/post', PostController.getAll);
-router.get('/post/:id', PostController.getById);
-router.get('/post/:id/category', PostController.getPostByCategory);
+router.get('/post', PostController.getPostByQuery);
+router.get('/post/:id/category', PostController.getCategoryByPost);
+router.get('/post/:id/:post_type', PostController.getById);
 
-router.get('/library', LibraryController.getFile);
+router.get('/library', LibraryController.getFileByQuery);
+router.get('/library/:id', LibraryController.getFileById);
 
 
 // router.use(checkAuth);
@@ -56,6 +59,7 @@ router.get('/permission/:id', PermissionController.getByGroup);
 
 router.post('/category', CategoryController.create);
 router.put('/category/:id', CategoryController.edit);
+router.put('/category/:id/:category_type', CategoryController.setDefault);
 router.delete('/category/:id', CategoryController.destroy);
 
 router.post('/product',checkRole.addProduct,ProductController.create);
@@ -64,6 +68,9 @@ router.delete('/product/:id', ProductController.destroy);
 
 router.post('/post',PostController.create);
 router.put('/post/:id',PostController.edit);
+router.put('/post/:id/autosave',PostController.autosave);
+router.put('/post/:id/trast', PostController.trash);
+router.put('/post/:id/restore', PostController.restore);
 router.delete('/post/:id', PostController.destroy);
 
 module.exports =  router;

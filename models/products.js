@@ -14,15 +14,15 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   products.init({
-    name: DataTypes.TEXT,
-    code: DataTypes.TEXT,
-    description: DataTypes.TEXT,
-    details: DataTypes.STRING,
+    name: DataTypes.STRING,
+    code: DataTypes.STRING,
+    description: DataTypes.TEXT('long'),
+    details: DataTypes.TEXT('long'),
     quantily: DataTypes.INTEGER,
     regular_price: DataTypes.INTEGER,
     sale_price: DataTypes.INTEGER,
-    status: DataTypes.TEXT,
-    slug: DataTypes.TEXT
+    status: DataTypes.STRING,
+    slug: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'products',

@@ -33,6 +33,4 @@ Object.keys(db).forEach(modelName => {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
-db.products.belongsToMany(db.categories, {through: 'category_product'})
-db.categories.belongsToMany(db.products, {through: 'category_product'})
 module.exports = db;

@@ -4,6 +4,8 @@ const fs = require('fs')
 const slug = require('slug')
 const db = require('../models/index');
 const Library = db.library;
+const Sequelize = db.Sequelize;
+const Op = Sequelize.Op;
 cloudinary.config({
     cloud_name: 'toilahuong',
     api_key: '866281779119939',
@@ -45,15 +47,43 @@ exports.delete = async (req,res) => {
         return res.status(400).json(error);
     }
 }
-exports.getFile = async (req,res) => {
+exports.getFileById = async(req,res) => {
     try {
-        const lib = await Library.findAll({order: [['id', 'DESC']],limit: 20});
-        return res.status(200).json(lib);
+        const id  = req.params.id ? parseInt(req.params.id) : null;
+        if(id === null) throw "Lỗi";
+        const response = await Library.findByPk(id);
+        if(response.length <= 0) throw "Lỗi";
+        return res.status(200).json(response);
     } catch (error) {
         console.log(error);
-        return res.status(400).json(error);
+        res.status(400).json(error);
     }
 }
+exports.getFileByQuery = async(req,res) => {
+    try {
+        const limit = req.query.limit ? parseInt(req.query.limit) : 10; 
+        const page = req.query.page ? parseInt(req.query.page) : 1; 
+        if(page <= 0) throw "Lỗi";
+        const name = req.query.name || ''; 
+
+        let query = {
+            order: [['id', 'DESC']],
+            where: {
+                name: {
+                    [Op.substring]: name
+                }
+            },
+            offset: limit*(page-1),
+            limit: limit
+        };
+        const response = await Library.findAll(query);
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json(error);
+    }
+}
+
 const uploadImage = (file) => {
     return new Promise((resolve,reject) => {
         cloudinary.uploader.upload(file.path, {
@@ -64,7 +94,7 @@ const uploadImage = (file) => {
                     
                     fs.unlinkSync(file.path)
                     resolve({
-                        name: result.original_filename,
+                        name: file.originalName,
                         url: result.secure_url,
                         cloudinary_id: result.public_id,
                         thumbnail: reSizeImage(result.public_id, 150, 150),

@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   permissions.init({
-    name: DataTypes.TEXT,
+    name: DataTypes.STRING,
     group_id: DataTypes.INTEGER
   }, {
     sequelize,

@@ -9,23 +9,31 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       title: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       content: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT('long')
       },
       thumbnail: {
-        type: Sequelize.TEXT
+        type: Sequelize.STRING
       },
       post_type: {
-        type: Sequelize.TEXT
+        type: Sequelize.STRING
       },
       slug: {
-        type: Sequelize.TEXT
+        type: Sequelize.STRING
       },
       status: {
-        type: Sequelize.TEXT
+        type: Sequelize.STRING
+      },
+      post_date: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      user_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
