@@ -10,19 +10,26 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // products.belongsToMany(models.categories, {through: "category_product"});
+      models.products.belongsTo(models.library,{as: "thumb",foreignKey: "thumbnail"});
+      models.products.belongsTo(models.users,{foreignKey: "user_id"});
+
     }
   };
   products.init({
     name: DataTypes.STRING,
-    code: DataTypes.STRING,
+    sku: DataTypes.STRING,
     description: DataTypes.TEXT('long'),
     details: DataTypes.TEXT('long'),
+    thumbnail: DataTypes.INTEGER,
     quantily: DataTypes.INTEGER,
     regular_price: DataTypes.INTEGER,
     sale_price: DataTypes.INTEGER,
     status: DataTypes.STRING,
-    slug: DataTypes.STRING
+    slug: DataTypes.STRING,
+    user_id: DataTypes.INTEGER,
+    post_date: DataTypes.DATE,
+    sale_start_time: DataTypes.DATE,
+    sale_end_time: DataTypes.DATE,
   }, {
     sequelize,
     modelName: 'products',

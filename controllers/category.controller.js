@@ -181,13 +181,19 @@ exports.destroy = async (req, res) => {
             )
             .run(req);
         validationResult(req).throw();
-        let response;
-        if(data.category_type === "post") response = await data.getPosts({raw: true});
-        else  response = await data.getProducts({raw: true});
-        const ids = response.map(res => res.id);
-        const defaultCategory = await Category.findOne({where: {default: true, category_type: data.category_type}});
-        await defaultCategory.addPosts(ids);
-        await data.setPosts([]);
+        if(data.category_type === "post") {
+            const response = await data.getPosts({raw: true});
+            const ids = response.map(res => res.id);
+            const defaultCategory = await Category.findOne({where: {default: true, category_type: data.category_type}});
+            await defaultCategory.addPosts(ids);
+            await data.setPosts([]);
+        } else {
+            const response = await data.getProducts({raw: true});
+            const ids = response.map(res => res.id);
+            const defaultCategory = await Category.findOne({where: {default: true, category_type: data.category_type}});
+            await defaultCategory.addProducts(ids);
+            await data.setProducts([]);
+        }
         const isDestroy = await Category.destroy({ where: { id: req.params.id } });
         console.log(isDestroy)
         return res.status(200).json({ isDestroy: isDestroy ? true : false });

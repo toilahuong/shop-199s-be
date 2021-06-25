@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       models.library.hasMany(models.posts, {foreignKey: "thumbnail"});
       models.library.hasMany(models.categories, {foreignKey: "thumbnail"});
-
+      models.library.hasMany(models.products, {as: "thumb", foreignKey: "thumbnail"});
     }
   };
   library.init({

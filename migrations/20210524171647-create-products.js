@@ -12,7 +12,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      code: {
+      sku: {
         type: Sequelize.STRING,
         unique: true
       },
@@ -21,6 +21,9 @@ module.exports = {
       },
       details: {
         type: Sequelize.TEXT('long')
+      },
+      thumbnail: {
+        type: Sequelize.INTEGER
       },
       quantily: {
         type: Sequelize.INTEGER,
@@ -41,6 +44,18 @@ module.exports = {
       slug: {
         type: Sequelize.STRING
       },
+      user_id: {
+        type: Sequelize.INTEGER,
+      },
+      post_date: {
+        type: Sequelize.DATE
+      },
+      sale_start_time: {
+        type: Sequelize.DATE
+      },
+      sale_end_time: {
+        type: Sequelize.DATE
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -48,7 +63,8 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
-      }
+      },
+
     });
   },
   down: async (queryInterface, Sequelize) => {

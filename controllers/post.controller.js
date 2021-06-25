@@ -38,11 +38,7 @@ exports.create = async (req,res) => {
         }, {where: {id: newPost.id}});
         newPost.slug = `${postSlug}-${newPost.id}`;
         if(post_type === 'post') {
-            const categories = await Category.findAll({where: {category_type: 'post'}});
-            let requestCategories = req.body.categories || [];
-            requestCategories = await requestCategories.filter((value1) => categories.find((value2) => parseInt(value1) === value2.id));
-            const results = await newPost.addCategories(requestCategories);
-            console.log(results);
+            await newPost.addCategories(req.body.categories || []);
         }
         
         return res.status(200).json(newPost);
@@ -65,12 +61,9 @@ exports.getPostByQuery = async(req,res) => {
             include = [
                 {model: User},
                 {model: Library},
-                {
-                    model: Category,
-                    where: {}
-                },
+                {model: Category}
             ]
-            if(category) include[2].where.id = parseInt(category);
+            if(category) include[2].where = {id: parseInt(category)}
         }   
         else 
             include = [
@@ -168,10 +161,9 @@ exports.edit = async (req,res) => {
             status: status,
         }
         const isUpdate = await Post.update(data, {where: {id: req.params.id}});
-        const categories = await Category.findAll();
-        let requestCategories = req.body.categories || [];
-        requestCategories = await requestCategories.filter((value1) => categories.find((value2) => parseInt(value1) === value2.id));
-        const results = await post.setCategories(requestCategories);
+        if(post_type === 'post') {
+            await newPost.setCategories(req.body.categories || []);
+        }
         return res.status(200).json({isUpdate: isUpdate ? true : false});
     } catch (error) {
         console.log(error);
